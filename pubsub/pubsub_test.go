@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Wrapper around a client that captures all outbound messages.
 type statefulClient struct {
 	c    *client.Client
 	msgs []string
@@ -56,6 +57,7 @@ func TestPubSub(t *testing.T) {
 		},
 		"1000s of messags": {
 			subs: 50,
+			// Generates 10k random length ~ASCII strings
 			msgs: func() []string {
 				res := make([]string, 10000)
 				for i := 0; i < 10000; i++ {
@@ -74,6 +76,8 @@ func TestPubSub(t *testing.T) {
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
 			ps := pubsub.NewPubSub()
+			ps.Start()
+			defer ps.Stop()
 			clients := make([]*statefulClient, tt.subs)
 			wg := sync.WaitGroup{}
 			wg.Add(len(tt.msgs) * tt.subs)
@@ -91,5 +95,4 @@ func TestPubSub(t *testing.T) {
 			}
 		})
 	}
-
 }

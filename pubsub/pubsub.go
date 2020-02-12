@@ -53,6 +53,9 @@ func (ps *PubSub) Unregister(key string) {
 func (ps *PubSub) Publish(message []byte) {
 	ps.RLock()
 	defer ps.RUnlock()
+	if !ps.running {
+		return
+	}
 	for _, v := range ps.registry {
 		v.Out <- message
 	}

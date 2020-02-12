@@ -11,3 +11,4 @@ run: build
 test:
 	go test $(TESTPKGS)
 	go test -race $(TESTPKGS)
+	go test -cover ${TESTPKGS}
